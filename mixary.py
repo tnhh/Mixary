@@ -55,7 +55,7 @@ def do_song_search(artist,title):
 """
 	Queries Spotify recc API to return a random similar song to the given seed(s)
 """
-def get_song_recs(seed):
+def get_song_recs(seed,last_song):
 	url = "https://api.spotify.com/v1/recommendations"
 	params = 	{"market": MARKET,
 			 "seed_tracks": seed,
@@ -102,6 +102,9 @@ def get_song_recs(seed):
 					break
 		else:
 			rec = random.choice(results['tracks'])
+			if rec['artists'][0]['id'] == last_song['artists'][0]['id']:
+				#print "self-artist match on previous song, re-roll"
+				return None
 			return rec
 
 
@@ -140,11 +143,14 @@ if __name__ == "__main__":
 
 		playlist = [seed]
 		break_play = False
+		last_song = seed
 
 		print "\n ----- \n Getting playlist. Hold tight! \n -----"
 		print "[1] %s - %s" % (seed['artists'][0]['name'], seed['name'])
 		while True:
-			new_rec = get_song_recs(track_id)
+			new_rec = get_song_recs(track_id,last_song)
+			if new_rec == None:
+				continue
 			
 			# check for duplicate artists
 			for song in playlist:
@@ -156,6 +162,7 @@ if __name__ == "__main__":
 			if break_play:
 				break
 			playlist.append(new_rec)
+			last_song = new_rec
 			track_id = new_rec['id']
 			print "[%s] %s - %s" % (len(playlist), new_rec['artists'][0]['name'], new_rec['name']) 
 
