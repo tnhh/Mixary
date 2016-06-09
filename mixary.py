@@ -2,6 +2,7 @@ import base64
 import curses
 import random
 import requests
+import subprocess
 import urllib
 
 """
@@ -84,31 +85,31 @@ def get_song_recs(seed):
 		params["min_%s" % tune] = tuned[tune][0]
 		params["max_%s" % tune] = tuned[tune][1]
 
-	print params
+	#print params
 
 	while True:	
 		r = requests.get(url, params=params, headers=auth_header)
 		results = r.json()
 
-		print "Got %s results" % len(results['tracks'])
+		#print "Got %s results" % len(results['tracks'])
 		if(len(results['tracks']) == 0):
 			while True:
 				to_remove = random.choice(tuneables)
 				if "min_%s" % to_remove in params:
-					print "pruning %s and trying search again" % to_remove
+					#print "pruning %s and trying search again" % to_remove
 					del params["min_%s" % to_remove]
 					del params["max_%s" % to_remove]
 					break
 		else:
 			rec = random.choice(results['tracks'])
+			return rec
 
 
-
-def make_playlist(seed_id):
-	print "Making your playlist now!"
-
-
-
+def setClipboardData(data):
+ p = subprocess.Popen(['pbcopy'], stdin=subprocess.PIPE)
+ p.stdin.write(data)
+ p.stdin.close()
+ retcode = p.wait()
 
 
 if __name__ == "__main__":
@@ -134,23 +135,47 @@ if __name__ == "__main__":
 		track_no = int(raw_input("Make playlist from which track? [1]: ")) or 1
 
 		#print songs['tracks']
-		track_id = songs['tracks']['items'][track_no - 1]['id']
+		seed = songs['tracks']['items'][track_no - 1]
+		track_id = seed['id']
 
-		playlist = [songs['tracks']['items'][track_no - 1]]
+		playlist = [seed]
+		break_play = False
+
+		print "\n ----- \n Getting playlist. Hold tight! \n -----"
+		print "[1] %s - %s" % (seed['artists'][0]['name'], seed['name'])
 		while True:
 			new_rec = get_song_recs(track_id)
 			
 			# check for duplicate artists
 			for song in playlist:
+				#print "does %s == %s" % (new_rec['artists'][0]['id'], song['artists'][0]['id'] )
 				if new_rec['artists'][0]['id'] == song['artists'][0]['id']:
+					break_play = True
 					break
-
+			
+			if break_play:
+				break
 			playlist.append(new_rec)
 			track_id = new_rec['id']
+			print "[%s] %s - %s" % (len(playlist), new_rec['artists'][0]['name'], new_rec['name']) 
+
+			#print playlist
 
 
 		print "Playlist done (%s songs)" % (len(playlist))
 
+		# build playlist url
+		trackset = ""
+		for song in playlist:
+			if trackset == "":
+				trackset = song['id']	
+			else:
+				trackset = "%s,%s" % (trackset, song['id'])
+
+		build_url = "http://open.spotify.com/trackset/Mixed by Mixary/%s?autoplay=1" % trackset
+		print "\n ==== \n Playlist in clipboard: %s \n ====" % build_url
+
+		setClipboardData(build_url)
 
 
 
