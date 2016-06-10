@@ -116,7 +116,7 @@ def setClipboardData(data):
  retcode = p.wait()
 
 def read_config():
-	globals MARKET, CLIENT_SECRET, CLIENT_ID
+	global MARKET, CLIENT_SECRET, CLIENT_ID
 	config = ConfigParser.ConfigParser()
 
 	config.read("config")
@@ -129,9 +129,9 @@ def read_config():
 	
 
 if __name__ == "__main__":
-	get_auth()
 	read_config()
-
+	get_auth()
+	
 
 	print "Mixary"
 	print "====\n"
