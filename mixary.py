@@ -134,7 +134,7 @@ if __name__ == "__main__":
 	
 
 	print "Mixary"
-	print "====\n"
+	print "=====\n"
 
 	artist = raw_input("Enter an artist (or Spotify track id beginning 'spotify:track:'): ")
 	if "spotify:track:" not in artist:
@@ -150,7 +150,7 @@ if __name__ == "__main__":
 			track_count += 1
 
 		print ""
-		track_no = int(raw_input("Make playlist from which track? [1]: ")) or 1
+		track_no = int(raw_input("Make playlist from which track? [1]: ") or 1)
 
 		#print songs['tracks']
 		seed = songs['tracks']['items'][track_no - 1]
