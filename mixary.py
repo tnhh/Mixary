@@ -1,4 +1,5 @@
 import base64
+import ConfigParser
 import curses
 import random
 import requests
@@ -10,9 +11,9 @@ import urllib
 	(C) Luke Hutton
 """
 
-MARKET = "GB"
-CLIENT_ID = "1cc247b90dfc49d8b3c04b81e7dd7558"
-CLIENT_SECRET = "3427491d67934770950f4cb315e4fba1"
+MARKET = ""
+CLIENT_ID = ""
+CLIENT_SECRET = ""
 random = random.SystemRandom()
 
 auth_token = ""
@@ -114,9 +115,23 @@ def setClipboardData(data):
  p.stdin.close()
  retcode = p.wait()
 
+def read_config():
+	globals MARKET, CLIENT_SECRET, CLIENT_ID
+	config = ConfigParser.ConfigParser()
+
+	config.read("config")
+	MARKET = config.get("mixary","market")
+	CLIENT_SECRET = config.get("mixary","spotify_secret")
+	CLIENT_ID = config.get("mixary","spotify_id")
+
+
+
+	
 
 if __name__ == "__main__":
 	get_auth()
+	read_config()
+
 
 	print "Mixary"
 	print "====\n"
