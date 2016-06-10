@@ -1,0 +1,5 @@
+[mixary]
+
+market: GB 					# an ISO 3166-1 alpha-2 country code ("US" etc)
+spotify_id: ID_HERE 				# get from https://developer.spotify.com/my-applications/
+spotify_secret: SECRET_HERE 		# get from https://developer.spotify.com/my-applications/
