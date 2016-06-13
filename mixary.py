@@ -136,22 +136,38 @@ if __name__ == "__main__":
 	print "Mixary"
 	print "=====\n"
 
-	artist = raw_input("Enter an artist: ")
+	while True:
 
-	if "spotify:track:" not in artist:
-		title = raw_input("Enter a song name by %s: " % artist)
+		artist = raw_input("Enter an artist: ")
 
-		songs = do_song_search(artist,title)
+		if "spotify:track:" not in artist:
+			title = raw_input("Enter a song name by %s: " % artist)
 
-		print "\nSEARCH RESULTS"
-		print "--------------"
-		track_count = 1
-		for track in songs['tracks']['items']:
-			print "[%s] %s - %s" % (track_count, track['artists'][0]['name'], track['name'])
-			track_count += 1
+			songs = do_song_search(artist,title)
 
-		print ""
-		track_no = int(raw_input("Make playlist from which track? [1]: ") or 1)
+			print "\nSEARCH RESULTS"
+			print "--------------"
+			track_count = 1
+			for track in songs['tracks']['items']:
+				print "[%s] %s - %s" % (track_count, track['artists'][0]['name'], track['name'])
+				track_count += 1
+
+			print ""
+
+		if(len(songs['tracks']['items']) == 0):
+			print "No search results"
+			continue
+
+		while True:
+			track_no = int(raw_input("Make playlist from which track? [1]: ") or 1)
+			if track_no not in range(1,(len(songs['tracks']['items'])+1)):
+				print "Invalid track number"
+				continue
+			else:
+				break
+
+
+
 
 		#print songs['tracks']
 		seed = songs['tracks']['items'][track_no - 1]
@@ -199,6 +215,7 @@ if __name__ == "__main__":
 		print "\n ==== \n Playlist in clipboard: %s \n ====" % build_url
 
 		setClipboardData(build_url)
+		break
 
 
 
