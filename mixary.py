@@ -136,7 +136,8 @@ if __name__ == "__main__":
 	print "Mixary"
 	print "=====\n"
 
-	artist = raw_input("Enter an artist (or Spotify track id beginning 'spotify:track:'): ")
+	artist = raw_input("Enter an artist: ")
+
 	if "spotify:track:" not in artist:
 		title = raw_input("Enter a song name by %s: " % artist)
 
