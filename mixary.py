@@ -1,5 +1,6 @@
 import base64
 import ConfigParser
+import platform
 import random
 import requests
 import subprocess
@@ -198,7 +199,9 @@ if __name__ == "__main__":
 		build_url = "http://open.spotify.com/trackset/Mixed by Mixary/%s?autoplay=1" % trackset
 		print "\n ==== \n Playlist in clipboard: %s \n ====" % build_url
 
-		set_paste_data(build_url)
+		# only invoke pbcopy on macOS
+		if platform.system() == "Darwin":
+			set_paste_data(build_url)
 		break
 
 
