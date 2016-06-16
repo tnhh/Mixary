@@ -28,12 +28,12 @@ def get_auth():
 	auth_headers = {'Authorization': auth_header}
 
 	r = requests.post(auth_url, data=auth_params, headers=auth_headers)
-
-	auth_token = r.json()["access_token"]
-	auth_header = {'Authorization': "Bearer %s" % auth_token}
-	return auth_token
-
-
+        if (r.status_code == requests.codes.ok):
+            auth_token = r.json()["access_token"]
+            auth_header = {'Authorization': "Bearer %s" % auth_token}
+            return auth_token
+        else:
+            r.raise_for_status()
 
 def do_song_search(artist,title):
 	search_url = "https://api.spotify.com/v1/search"
