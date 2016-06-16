@@ -1,6 +1,5 @@
 import base64
 import ConfigParser
-import curses
 import random
 import requests
 import subprocess
@@ -8,7 +7,7 @@ import urllib
 
 """
 	Mixary v4.0.0
-	(C) Luke Hutton
+	(C) 2014 - 2016 Luke Hutton
 """
 
 MARKET = ""
@@ -28,13 +27,10 @@ def get_auth():
 	auth_params = {'grant_type': "client_credentials"}
 	auth_headers = {'Authorization': auth_header}
 
-	#print auth_header
 	r = requests.post(auth_url, data=auth_params, headers=auth_headers)
 
-	#print r.json()
 	auth_token = r.json()["access_token"]
 	auth_header = {'Authorization': "Bearer %s" % auth_token}
-	#print auth_header
 	return auth_token
 
 
@@ -42,10 +38,6 @@ def get_auth():
 def do_song_search(artist,title):
 	search_url = "https://api.spotify.com/v1/search"
 	search_params="limit=10&market=%s&type=track&q=artist:%s+track:%s" % (MARKET, urllib.quote(artist), urllib.quote(title))
-
-	#search_params = {"q": "artist:%s&track=%s" % (artist, title),
-	#			 "type": "track",
-	#			 "market": "GB"}
 
 	results = requests.get(search_url,params=search_params)
 	j_results = results.json()
@@ -81,30 +73,24 @@ def get_song_recs(seed,last_song):
 		else:
 			tuned[to_tune] = [tune_min,tune_max]
 
-	#print tuned
 	for tune in tuned:
 		params["min_%s" % tune] = tuned[tune][0]
 		params["max_%s" % tune] = tuned[tune][1]
-
-	#print params
 
 	while True:	
 		r = requests.get(url, params=params, headers=auth_header)
 		results = r.json()
 
-		#print "Got %s results" % len(results['tracks'])
 		if(len(results['tracks']) == 0):
 			while True:
 				to_remove = random.choice(tuneables)
 				if "min_%s" % to_remove in params:
-					#print "pruning %s and trying search again" % to_remove
 					del params["min_%s" % to_remove]
 					del params["max_%s" % to_remove]
 					break
 		else:
 			rec = random.choice(results['tracks'])
 			if rec['artists'][0]['id'] == last_song['artists'][0]['id']:
-				#print "self-artist match on previous song, re-roll"
 				return None
 			return rec
 
@@ -123,10 +109,6 @@ def read_config():
 	MARKET = config.get("mixary","market")
 	CLIENT_SECRET = config.get("mixary","spotify_secret")
 	CLIENT_ID = config.get("mixary","spotify_id")
-
-
-
-	
 
 if __name__ == "__main__":
 	read_config()
@@ -186,7 +168,6 @@ if __name__ == "__main__":
 			
 			# check for duplicate artists
 			for song in playlist:
-				#print "does %s == %s" % (new_rec['artists'][0]['id'], song['artists'][0]['id'] )
 				if new_rec['artists'][0]['id'] == song['artists'][0]['id']:
 					break_play = True
 					break
@@ -197,8 +178,6 @@ if __name__ == "__main__":
 			last_song = new_rec
 			track_id = new_rec['id']
 			print "[%s] %s - %s" % (len(playlist), new_rec['artists'][0]['name'], new_rec['name']) 
-
-			#print playlist
 
 
 		print "Playlist done (%s songs)" % (len(playlist))
