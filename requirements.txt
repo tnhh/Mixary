@@ -1,0 +1,5 @@
+# This file lists all dependencies required for Mixary to work.
+
+# Run 'pip install -r requirements.txt' to install these to your environment.
+
+requests
