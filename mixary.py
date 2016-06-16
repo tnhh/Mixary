@@ -5,6 +5,7 @@ import random
 import requests
 import subprocess
 import urllib
+import os
 
 """
 	Mixary v4.0.0
@@ -102,10 +103,20 @@ def get_song_recs(seed,last_song):
                     r.raise_for_status()
 
 def set_paste_data(data):
- p = subprocess.Popen(['pbcopy'], stdin=subprocess.PIPE)
- p.stdin.write(data)
- p.stdin.close()
- wait = p.wait()
+        p = None
+
+        try:
+	    # macs use pbcopy
+            p = subprocess.Popen(['pbcopy'], stdin=subprocess.PIPE)
+        except OSError as err:
+            if err.errno == os.errno.ENOENT:
+                # no pbcopy? let's look for xclip
+                p = subprocess.Popen(['xclip', '-sel', 'clip'], stdin=subprocess.PIPE)
+
+        if p is not None:
+            p.stdin.write(data)
+            p.stdin.close()
+            wait = p.wait()
 
 def read_config():
 	global MARKET, CLIENT_SECRET, CLIENT_ID
