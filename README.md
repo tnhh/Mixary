@@ -25,7 +25,8 @@ Run `python mixary.py` and enter an artist/song title when prompted. Mixary will
 songs, and let you choose which of the results to use as the seed.
 
 Mixary will then generate a playlist based on this seed ID. Playlists are generative, meaning that as songs
-are added, they influence the direction of the playlist rather than the seed song alone. 
+are added, they influence the direction of the playlist rather than the seed song alone. Unlike some other
+playlist generators, more obscure/left-field songs are also surfaced to promote discovery.
 
 A URL to the generated playlist is given (on macOS this copied to the clipboard). Pasting this in a browser
 will launch the playlist in Spotify.
