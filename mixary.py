@@ -40,9 +40,12 @@ def do_song_search(artist,title):
 	search_params="limit=10&market=%s&type=track&q=artist:%s+track:%s" % (MARKET, urllib.quote(artist), urllib.quote(title))
 
 	results = requests.get(search_url,params=search_params)
-	j_results = results.json()
+        if (results.status_code == requests.codes.ok):
+	    j_results = results.json()
 
-	return j_results
+	    return j_results
+        else:
+            results.raise_for_status()
 
 
 """
@@ -80,20 +83,22 @@ def get_song_recs(seed,last_song):
 	while True:	
 		r = requests.get(url, params=params, headers=auth_header)
 		results = r.json()
+                if (r.status_code == requests.codes.ok):
 
-		if(len(results['tracks']) == 0):
-			while True:
-				to_remove = random.choice(tuneables)
-				if "min_%s" % to_remove in params:
-					del params["min_%s" % to_remove]
-					del params["max_%s" % to_remove]
-					break
-		else:
-			rec = random.choice(results['tracks'])
-			if rec['artists'][0]['id'] == last_song['artists'][0]['id']:
-				return None
-			return rec
-
+                    if(len(results['tracks']) == 0):
+                            while True:
+                                    to_remove = random.choice(tuneables)
+                                    if "min_%s" % to_remove in params:
+                                            del params["min_%s" % to_remove]
+                                            del params["max_%s" % to_remove]
+                                            break
+                    else:
+                            rec = random.choice(results['tracks'])
+                            if rec['artists'][0]['id'] == last_song['artists'][0]['id']:
+                                    return None
+                            return rec
+                else:
+                    r.raise_for_status()
 
 def set_paste_data(data):
  p = subprocess.Popen(['pbcopy'], stdin=subprocess.PIPE)
